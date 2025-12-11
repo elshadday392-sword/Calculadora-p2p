@@ -1,0 +1,1609 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#1a1a2e">
+    <title>P2P Master Pro - Calculadora Avanzada</title>
+    <!-- Iconos de Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ===== VARIABLES CSS ===== */
+        :root {
+            --primary: #3a86ff;
+            --secondary: #8338ec;
+            --success: #06d6a0;
+            --warning: #ffbe0b;
+            --danger: #ff006e;
+            --dark: #1a1a2e;
+            --darker: #16213e;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            --radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* ===== RESET Y BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
+            color: var(--light);
+            min-height: 100vh;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+        }
+        
+        /* ===== LAYOUT PRINCIPAL ===== */
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            max-width: 100%;
+        }
+        
+        /* ===== HEADER CON GRADIENTE ANIMADO ===== */
+        .app-header {
+            background: linear-gradient(135deg, 
+                rgba(26, 26, 46, 0.98) 0%, 
+                rgba(22, 33, 62, 0.98) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 1rem 1.5rem;
+            border-bottom: 2px solid var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+            animation: headerSlideDown 0.5s ease-out;
+        }
+        
+        @keyframes headerSlideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .app-logo {
+            width: 3rem;
+            height: 3rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(58, 134, 255, 0.4);
+            animation: logoPulse 2s infinite;
+        }
+        
+        @keyframes logoPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .app-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+        }
+        
+        .premium-badge {
+            background: linear-gradient(135deg, #ffd700, #ff9500);
+            color: #000;
+            padding: 0.4rem 1rem;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(255, 213, 0, 0.3);
+            animation: badgeGlow 2s infinite;
+        }
+        
+        @keyframes badgeGlow {
+            0%, 100% { box-shadow: 0 4px 15px rgba(255, 213, 0, 0.3); }
+            50% { box-shadow: 0 4px 25px rgba(255, 213, 0, 0.5); }
+        }
+        
+        /* ===== BOTONES MEJORADOS ===== */
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            border: none;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%);
+            transform-origin: 50% 50%;
+        }
+        
+        .btn:focus:not(:active)::after {
+            animation: ripple 1s ease-out;
+        }
+        
+        @keyframes ripple {
+            0% { transform: scale(0, 0); opacity: 0.5; }
+            100% { transform: scale(20, 20); opacity: 0; }
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 8px 25px rgba(58, 134, 255, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(58, 134, 255, 0.4);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(-1px);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #06b48a);
+            color: white;
+            box-shadow: 0 8px 25px rgba(6, 214, 160, 0.3);
+        }
+        
+        .btn-block {
+            width: 100%;
+        }
+        
+        .btn-icon {
+            padding: 0.75rem;
+            width: 3.5rem;
+            height: 3.5rem;
+            border-radius: 12px;
+        }
+        
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+        
+        /* ===== CONTENIDO PRINCIPAL ===== */
+        .main-content {
+            flex: 1;
+            padding: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            animation: contentFadeIn 0.7s ease-out;
+        }
+        
+        @keyframes contentFadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .page {
+            display: none;
+            animation: pageSlideIn 0.5s ease-out;
+        }
+        
+        @keyframes pageSlideIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        /* ===== TARJETAS CON NEOMORFISMO ===== */
+        .card {
+            background: rgba(30, 30, 46, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: var(--radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 
+                var(--shadow),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            opacity: 0;
+            transition: var(--transition);
+        }
+        
+        .card:hover::before {
+            opacity: 1;
+        }
+        
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--light);
+        }
+        
+        /* ===== FORMULARIOS MEJORADOS ===== */
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #cbd5e0;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            background: rgba(15, 23, 42, 0.6);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 500;
+            transition: var(--transition);
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(15, 23, 42, 0.8);
+            box-shadow: 0 0 0 4px rgba(58, 134, 255, 0.1);
+        }
+        
+        .input-with-icon {
+            position: relative;
+        }
+        
+        .input-icon {
+            position: absolute;
+            left: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+            font-size: 1.1rem;
+            transition: var(--transition);
+        }
+        
+        .form-control:focus + .input-icon {
+            color: var(--primary);
+        }
+        
+        .input-with-icon .form-control {
+            padding-left: 3.5rem;
+        }
+        
+        .currency-symbol {
+            position: absolute;
+            right: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        
+        .input-with-symbol .form-control {
+            padding-right: 3.5rem;
+        }
+        
+        /* ===== CALCULADORA GRID MEJORADA ===== */
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        @media (min-width: 768px) {
+            .calculator-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        /* ===== SELECTOR DE MONTO USDT ===== */
+        .usdt-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .usdt-option {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid transparent;
+            border-radius: 10px;
+            padding: 0.75rem;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+            color: #cbd5e0;
+        }
+        
+        .usdt-option:hover {
+            background: rgba(58, 134, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .usdt-option.active {
+            background: rgba(58, 134, 255, 0.2);
+            border-color: var(--primary);
+            color: var(--primary);
+            box-shadow: 0 4px 15px rgba(58, 134, 255, 0.2);
+        }
+        
+        /* ===== RESULTADOS ESTILIZADOS ===== */
+        .result-box {
+            background: linear-gradient(135deg, 
+                rgba(15, 23, 42, 0.9) 0%, 
+                rgba(22, 33, 62, 0.9) 100%);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-top: 2rem;
+            border-left: 6px solid var(--success);
+            position: relative;
+            overflow: hidden;
+            animation: resultAppear 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        @keyframes resultAppear {
+            from { opacity: 0; transform: translateY(20px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        
+        .result-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, 
+                rgba(6, 214, 160, 0.1) 0%, 
+                transparent 100%);
+            pointer-events: none;
+        }
+        
+        .result-title {
+            color: #a0aec0;
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+        
+        .result-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--success);
+            margin-bottom: 1.5rem;
+            text-shadow: 0 2px 10px rgba(6, 214, 160, 0.3);
+        }
+        
+        .result-details {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            transition: var(--transition);
+        }
+        
+        .result-row:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateX(5px);
+        }
+        
+        .result-label {
+            color: #cbd5e0;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .result-amount {
+            font-weight: 700;
+            color: white;
+            font-size: 1.1rem;
+        }
+        
+        /* ===== SUMMARY CARDS ===== */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .summary-card {
+            background: linear-gradient(135deg, 
+                rgba(30, 30, 46, 0.8) 0%, 
+                rgba(22, 33, 62, 0.8) 100%);
+            border-radius: var(--radius);
+            padding: 2rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .summary-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+        
+        .summary-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .summary-title {
+            font-size: 1rem;
+            color: #a0aec0;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        
+        .summary-value {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin: 1rem 0;
+            color: var(--success);
+            text-shadow: 0 2px 8px rgba(6, 214, 160, 0.3);
+        }
+        
+        .summary-note {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin-top: 0.5rem;
+        }
+        
+        /* ===== ANIMACIONES PARA DATOS ===== */
+        .animated-number {
+            display: inline-block;
+            animation: numberPop 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        @keyframes numberPop {
+            0% { transform: scale(0.8); opacity: 0; }
+            70% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        /* ===== SCROLLBAR PERSONALIZADA ===== */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            transition: var(--transition);
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+        }
+        
+        /* ===== RESPONSIVE DESIGN ===== */
+        @media (max-width: 768px) {
+            .app-header {
+                padding: 0.75rem 1rem;
+            }
+            
+            .app-title {
+                font-size: 1.2rem;
+            }
+            
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .card {
+                padding: 1.5rem;
+            }
+            
+            .calculator-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .result-value {
+                font-size: 2rem;
+            }
+            
+            .usdt-selector {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        /* ===== LOADING STATES ===== */
+        .loading {
+            position: relative;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 24px;
+            height: 24px;
+            margin: -12px 0 0 -12px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* ===== FOOTER ESTILIZADO ===== */
+        .app-footer {
+            text-align: center;
+            padding: 2rem 1.5rem;
+            color: #94a3b8;
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 3rem;
+            background: rgba(22, 33, 62, 0.5);
+            backdrop-filter: blur(10px);
+        }
+        
+        /* ===== UTILITY CLASSES ===== */
+        .text-center { text-align: center; }
+        .mb-0 { margin-bottom: 0; }
+        .mt-1 { margin-top: 0.5rem; }
+        .mt-2 { margin-top: 1rem; }
+        .mt-3 { margin-top: 1.5rem; }
+        .mt-4 { margin-top: 2rem; }
+        .mb-1 { margin-bottom: 0.5rem; }
+        .mb-2 { margin-bottom: 1rem; }
+        .mb-3 { margin-bottom: 1.5rem; }
+        .mb-4 { margin-bottom: 2rem; }
+        .d-none { display: none !important; }
+        .d-flex { display: flex; }
+        .justify-between { justify-content: space-between; }
+        .align-center { align-items: center; }
+        .gap-1 { gap: 0.5rem; }
+        .gap-2 { gap: 1rem; }
+        .gap-3 { gap: 1.5rem; }
+        
+        /* ===== BADGES ===== */
+        .badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+        
+        .badge-success {
+            background: rgba(6, 214, 160, 0.2);
+            color: var(--success);
+            border: 1px solid rgba(6, 214, 160, 0.3);
+        }
+        
+        .badge-warning {
+            background: rgba(255, 190, 11, 0.2);
+            color: var(--warning);
+            border: 1px solid rgba(255, 190, 11, 0.3);
+        }
+        
+        .badge-info {
+            background: rgba(58, 134, 255, 0.2);
+            color: var(--primary);
+            border: 1px solid rgba(58, 134, 255, 0.3);
+        }
+        
+        /* ===== TOOLTIPS ===== */
+        [data-tooltip] {
+            position: relative;
+        }
+        
+        [data-tooltip]:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            z-index: 1000;
+            margin-bottom: 0.5rem;
+            pointer-events: none;
+        }
+        
+        /* ===== GRADIENT TEXT ===== */
+        .gradient-text {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 800;
+        }
+        
+        /* ===== MONTOS RÁPIDOS ===== */
+        .quick-amounts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .quick-amount {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .quick-amount:hover {
+            background: rgba(58, 134, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .quick-amount.active {
+            background: rgba(58, 134, 255, 0.2);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo-container">
+                <div class="app-logo">$</div>
+                <div>
+                    <h1 class="app-title">P2P Master Pro</h1>
+                    <span class="premium-badge"><i class="fas fa-crown"></i> PREMIUM</span>
+                </div>
+            </div>
+            
+            <div class="d-flex gap-2 align-center">
+                <button class="btn btn-icon btn-primary" id="refreshData" data-tooltip="Actualizar cálculos">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+        </header>
+        
+        <!-- Contenido principal -->
+        <main class="main-content">
+            <!-- Dashboard -->
+            <section id="dashboard" class="page active">
+                <div class="page-header mb-4">
+                    <h2 class="page-title gradient-text"><i class="fas fa-tachometer-alt"></i> Dashboard</h2>
+                    <p class="page-description">Calculadora precisa de ganancias P2P - Monto personalizable</p>
+                </div>
+                
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-sliders-h"></i> Configuración de la Operación</h3>
+                    </div>
+                    
+                    <!-- Selector de monto USDT -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-coins"></i> Cantidad de USDT a operar
+                        </label>
+                        
+                        <!-- Input personalizado -->
+                        <div class="input-with-icon">
+                            <i class="input-icon fas fa-dollar-sign"></i>
+                            <input type="number" id="usdtAmount" class="form-control" value="100" min="1" step="1">
+                        </div>
+                        
+                        <!-- Montos rápidos -->
+                        <div class="quick-amounts mt-2">
+                            <span class="quick-amount" data-amount="10">10 USDT</span>
+                            <span class="quick-amount" data-amount="25">25 USDT</span>
+                            <span class="quick-amount" data-amount="50">50 USDT</span>
+                            <span class="quick-amount active" data-amount="100">100 USDT</span>
+                            <span class="quick-amount" data-amount="200">200 USDT</span>
+                            <span class="quick-amount" data-amount="500">500 USDT</span>
+                            <span class="quick-amount" data-amount="1000">1,000 USDT</span>
+                            <span class="quick-amount" data-amount="5000">5,000 USDT</span>
+                        </div>
+                        
+                        <small class="d-block mt-1" style="color: #94a3b8;">
+                            Ingresa la cantidad de USDT que deseas operar (mínimo 1 USDT)
+                        </small>
+                    </div>
+                    
+                    <div class="calculator-grid">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-arrow-up"></i> Precio de VENTA (1 USDT)
+                            </label>
+                            <div class="input-with-symbol">
+                                <input type="number" id="sellPrice" class="form-control" value="424.00" step="0.001" min="0.001">
+                                <span class="currency-symbol">Bs.</span>
+                            </div>
+                            <small class="d-block mt-1" style="color: #94a3b8;">Precio al que vendes cada USDT</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-arrow-down"></i> Precio de COMPRA (1 USDT)
+                            </label>
+                            <div class="input-with-symbol">
+                                <input type="number" id="buyPrice" class="form-control" value="417.90" step="0.001" min="0.001">
+                                <span class="currency-symbol">Bs.</span>
+                            </div>
+                            <small class="d-block mt-1" style="color: #94a3b8;">Precio al que compras cada USDT</small>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-redo"></i> Número de vueltas (operaciones)
+                        </label>
+                        <div class="input-with-icon">
+                            <i class="input-icon fas fa-exchange-alt"></i>
+                            <input type="number" id="numberOfTrades" class="form-control" value="1" min="1" step="1">
+                        </div>
+                        <small class="d-block mt-1" style="color: #94a3b8;">
+                            Cantidad de veces que compras y vendes (1 vuelta = 1 compra + 1 venta)
+                        </small>
+                    </div>
+                    
+                    <button class="btn btn-primary btn-block mb-4" id="calculateAll">
+                        <i class="fas fa-calculator"></i> Calcular Ganancias Totales
+                    </button>
+                    
+                    <div class="result-box">
+                        <div class="result-title">Resumen del Spread</div>
+                        <div class="result-value" id="marketSpread">1.459%</div>
+                        
+                        <div class="result-details">
+                            <div class="result-row">
+                                <span class="result-label"><i class="fas fa-exchange-alt"></i> Diferencia por USDT:</span>
+                                <span class="result-amount" id="diffPerUsdt">6.10 Bs.</span>
+                            </div>
+                            <div class="result-row">
+                                <span class="result-label"><i class="fas fa-percentage"></i> Spread porcentual:</span>
+                                <span class="result-amount" id="spreadPercent">1.459%</span>
+                            </div>
+                            <div class="result-row">
+                                <span class="result-label"><i class="fas fa-coins"></i> Monto operado:</span>
+                                <span class="result-amount" id="operatedAmount">100 USDT</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Resultados por operación individual -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-calculator"></i> Ganancias por Operación</h3>
+                        <span class="badge badge-info" id="currentAmountBadge">100 USDT</span>
+                    </div>
+                    
+                    <div class="calculator-grid">
+                        <!-- Resultados de COMPRA -->
+                        <div class="result-box">
+                            <div class="result-title">Al COMPRAR <span id="buyAmountDisplay">100</span> USDT</div>
+                            <div class="result-value" id="buyProfitUsdt">5.00 USDT</div>
+                            
+                            <div class="result-details">
+                                <div class="result-row">
+                                    <span class="result-label"><i class="fas fa-dollar-sign"></i> Inversión total:</span>
+                                    <span class="result-amount" id="buyInvestment">41,790.00 Bs.</span>
+                                </div>
+                                <div class="result-row">
+                                    <span class="result-label"><i class="fas fa-money-bill-wave"></i> Venta esperada:</span>
+                                    <span class="result-amount" id="sellTotal">42,400.00 Bs.</span>
+                                </div>
+                                <div class="result-row">
+                                    <span class="result-label"><i class="fas fa-chart-line"></i> Ganancia en VES:</span>
+                                    <span class="result-amount" id="buyProfitVes">610.00 Bs.</span>
+                                </div>
+                                <div class="result-row">
+                                    <span class="result-label"><i class="fas fa-coins"></i> Ganancia en USDT:</span>
+                                    <span class="result-amount" id="buyProfitUsdtValue">1.459 USDT</span>
+                                </div>
+                                <div class="result-row" style="background: rgba(58, 134, 255, 0.1);">
+                                    <span class="result-label"><i class="fas fa-percentage"></i> ROI por compra:</span>
+                                    <span class="result-amount" id="buyRoi">1.46%</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Resultados de VENTA -->
+                        <div class="result-box">
+                            <div class="result-title">Al VENDER <span id="sellAmountDisplay">100</span> USDT</div>
+                            <div class="result-value" id="sellProfitVes">610.00 Bs.</div>
+                            
+                            <div class="result-details">
+                                <div class="result-row">
+                                    <span class="result-label"><i class="fas fa-money-bill-wave"></i> Ingreso por venta:</span>
+                                    <span class="result-amount" id="sellIncome">42,400.00 Bs.</span>
+                                </div>
+                                <div class="result-row">
+                                    <span class="result-label"><i class="fas fa-shopping-cart"></i> Compra necesaria:</span>
+                                    <span class="result-amount" id="buyTotal">41,790.00 Bs.</span>
+                                </div>
+                                <div class="result-row">
+                                    <span class="result-label"><i class="fas fa-chart-line"></i> Ganancia en VES:</span>
+                                    <span class="result-amount" id="sellProfitVesValue">610.00 Bs.</span>
+                                </div>
+                                <div class="result-row">
+                                    <span class="result-label"><i class="fas fa-coins"></i> USDT recuperados:</span>
+                                    <span class="result-amount" id="sellProfitUsdt">101.459 USDT</span>
+                                </div>
+                                <div class="result-row" style="background: rgba(58, 134, 255, 0.1);">
+                                    <span class="result-label"><i class="fas fa-percentage"></i> Ganancia neta:</span>
+                                    <span class="result-amount" id="sellNetProfit">1.46%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Resumen total con vueltas -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-chart-bar"></i> Ganancias Totales con Vueltas</h3>
+                        <div class="d-flex gap-2 align-center">
+                            <span class="badge badge-success" id="totalTradesBadge">1 vuelta</span>
+                            <span class="badge badge-warning" id="totalAmountBadge">100 USDT</span>
+                        </div>
+                    </div>
+                    
+                    <div class="result-box">
+                        <div class="result-title">Para <span id="tradesCount">1</span> vuelta(s) de <span id="amountPerTrade">100</span> USDT cada una</div>
+                        <div class="result-value" id="totalProfit">610.00 Bs.</div>
+                        
+                        <div class="result-details">
+                            <div class="result-row">
+                                <span class="result-label"><i class="fas fa-redo"></i> Vueltas realizadas:</span>
+                                <span class="result-amount" id="tradesDisplay">1</span>
+                            </div>
+                            <div class="result-row">
+                                <span class="result-label"><i class="fas fa-coins"></i> USDT por vuelta:</span>
+                                <span class="result-amount" id="usdtPerTrade">100</span>
+                            </div>
+                            <div class="result-row">
+                                <span class="result-label"><i class="fas fa-money-bill-wave"></i> Ganancia por vuelta:</span>
+                                <span class="result-amount" id="profitPerTrade">610.00 Bs.</span>
+                            </div>
+                            <div class="result-row">
+                                <span class="result-label"><i class="fas fa-chart-line"></i> Ganancia total en VES:</span>
+                                <span class="result-amount" id="totalProfitVes">610.00 Bs.</span>
+                            </div>
+                            <div class="result-row">
+                                <span class="result-label"><i class="fas fa-coins"></i> Ganancia total en USDT:</span>
+                                <span class="result-amount" id="totalProfitUsdt">1.459 USDT</span>
+                            </div>
+                            <div class="result-row" style="background: rgba(6, 214, 160, 0.1);">
+                                <span class="result-label"><i class="fas fa-crown"></i> Rentabilidad anual (30 vueltas/mes):</span>
+                                <span class="result-amount" id="annualProfit">219,600.00 Bs.</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="summary-grid mt-4">
+                        <div class="summary-card">
+                            <div class="summary-title">Para ganar 1,000,000 Bs.</div>
+                            <div class="summary-value" id="tradesForMillion">1,639</div>
+                            <div class="summary-note">vueltas necesarias</div>
+                        </div>
+                        
+                        <div class="summary-card">
+                            <div class="summary-title">Ganancia mensual</div>
+                            <div class="summary-value" id="monthlyProfit">18,300.00 Bs.</div>
+                            <div class="summary-note">con 30 vueltas/mes</div>
+                        </div>
+                        
+                        <div class="summary-card">
+                            <div class="summary-title">ROI por vuelta</div>
+                            <div class="summary-value" id="roiPerTrade">1.46%</div>
+                            <div class="summary-note">retorno sobre inversión</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tabla de ejemplos con diferentes montos -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-table"></i> Ejemplos con Diferentes Montos</h3>
+                    </div>
+                    
+                    <div class="table-responsive" style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
+                            <thead>
+                                <tr style="background: rgba(58, 134, 255, 0.2);">
+                                    <th style="padding: 1rem; text-align: left;">USDT</th>
+                                    <th style="padding: 1rem; text-align: left;">Inversión (Bs.)</th>
+                                    <th style="padding: 1rem; text-align: left;">Ganancia/Vuelta (Bs.)</th>
+                                    <th style="padding: 1rem; text-align: left;">Ganancia/Vuelta (USDT)</th>
+                                    <th style="padding: 1rem; text-align: left;">10 Vueltas (Bs.)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="examplesTable">
+                                <!-- Se llenará dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p class="mb-1">P2P Master Pro v4.0 • © 2023 • <span class="gradient-text">Monto Personalizable</span></p>
+            <p class="mb-0"><small>Opera desde 1 USDT hasta el monto que desees • Cálculos precisos garantizados</small></p>
+        </footer>
+    </div>
+
+    <!-- Script principal -->
+    <script>
+        // ===== VARIABLES GLOBALES =====
+        let currentPage = 'dashboard';
+        let calculationsHistory = [];
+        let currentUsdtAmount = 100;
+        
+        // ===== INICIALIZACIÓN =====
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 P2P Master Pro v4.0 - Monto Personalizable');
+            
+            // Cargar datos guardados
+            loadSavedData();
+            
+            // Configurar eventos
+            setupEventListeners();
+            
+            // Calcular valores iniciales
+            calculateAll();
+            
+            // Generar tabla de ejemplos
+            generateExamplesTable();
+            
+            // Mostrar versión
+            showWelcomeMessage();
+        });
+        
+        // ===== CONFIGURACIÓN DE EVENTOS =====
+        function setupEventListeners() {
+            // Botón de calcular todo
+            document.getElementById('calculateAll').addEventListener('click', calculateAll);
+            
+            // Botón de refrescar
+            document.getElementById('refreshData').addEventListener('click', function() {
+                calculateAll();
+                showNotification('🔄 Cálculos actualizados', 'success');
+            });
+            
+            // Entradas con actualización automática
+            const inputs = ['usdtAmount', 'sellPrice', 'buyPrice', 'numberOfTrades'];
+            inputs.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.addEventListener('input', function() {
+                        // Para el monto USDT, actualizar badge
+                        if (id === 'usdtAmount') {
+                            updateUsdtBadge();
+                        }
+                        calculateAll();
+                    });
+                }
+            });
+            
+            // Montos rápidos
+            document.querySelectorAll('.quick-amount').forEach(button => {
+                button.addEventListener('click', function() {
+                    const amount = parseInt(this.getAttribute('data-amount'));
+                    document.getElementById('usdtAmount').value = amount;
+                    
+                    // Actualizar clase activa
+                    document.querySelectorAll('.quick-amount').forEach(b => {
+                        b.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    updateUsdtBadge();
+                    calculateAll();
+                });
+            });
+            
+            // Enter para calcular
+            document.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    calculateAll();
+                }
+            });
+        }
+        
+        function updateUsdtBadge() {
+            const amount = document.getElementById('usdtAmount').value;
+            document.getElementById('currentAmountBadge').textContent = amount + ' USDT';
+            document.getElementById('totalAmountBadge').textContent = amount + ' USDT';
+        }
+        
+        // ===== FUNCIÓN PRINCIPAL DE CÁLCULO =====
+        function calculateAll() {
+            // Obtener valores de los inputs
+            const usdtAmount = parseFloat(document.getElementById('usdtAmount').value) || 100;
+            const sellPrice = parseFloat(document.getElementById('sellPrice').value) || 424.00;
+            const buyPrice = parseFloat(document.getElementById('buyPrice').value) || 417.90;
+            const numberOfTrades = parseInt(document.getElementById('numberOfTrades').value) || 1;
+            
+            // Validar valores
+            if (usdtAmount < 1 || sellPrice <= 0 || buyPrice <= 0 || numberOfTrades <= 0) {
+                showNotification('⚠️ Ingresa valores válidos', 'warning');
+                return;
+            }
+            
+            // Actualizar monto actual
+            currentUsdtAmount = usdtAmount;
+            
+            // A = Cantidad de USDT a operar (ahora variable)
+            const A = usdtAmount;
+            
+            // B = Precio de venta por USDT
+            const B = sellPrice;
+            
+            // D = Precio de compra por USDT
+            const D = buyPrice;
+            
+            // C = A × B (Venta total en Bs)
+            const C = A * B;
+            
+            // E = A × D (Compra total en Bs)
+            const E = A * D;
+            
+            // F = C - E (Ganancia por operación en Bs)
+            const F = C - E;
+            
+            // V = Número de vueltas
+            const V = numberOfTrades;
+            
+            // G = V × F (Ganancia total en Bs)
+            const G = V * F;
+            
+            // Cálculos adicionales
+            const spreadPercent = ((B - D) / D) * 100;
+            const diffPerUsdt = B - D;
+            
+            // Ganancia en USDT por compra (convertir Bs a USDT usando precio de venta)
+            const profitUsdtPerBuy = F / B;
+            
+            // Ganancia en USDT por venta (USDT iniciales + ganancia)
+            const profitUsdtPerSell = A + profitUsdtPerBuy;
+            
+            // ROI por operación
+            const roiPerTrade = (F / E) * 100;
+            
+            // ===== ACTUALIZAR INTERFAZ =====
+            
+            // 1. Actualizar displays de montos
+            document.getElementById('buyAmountDisplay').textContent = formatNumber(A);
+            document.getElementById('sellAmountDisplay').textContent = formatNumber(A);
+            document.getElementById('operatedAmount').textContent = formatNumber(A) + ' USDT';
+            document.getElementById('currentAmountBadge').textContent = formatNumber(A) + ' USDT';
+            document.getElementById('totalAmountBadge').textContent = formatNumber(A) + ' USDT';
+            document.getElementById('amountPerTrade').textContent = formatNumber(A);
+            document.getElementById('usdtPerTrade').textContent = formatNumber(A);
+            
+            // 2. Información del mercado
+            document.getElementById('marketSpread').textContent = formatNumber(spreadPercent, 3) + '%';
+            document.getElementById('diffPerUsdt').textContent = formatCurrency(diffPerUsdt);
+            document.getElementById('spreadPercent').textContent = formatNumber(spreadPercent, 3) + '%';
+            
+            // 3. Resultados por COMPRA
+            document.getElementById('buyProfitUsdt').textContent = formatNumber(profitUsdtPerBuy, 3) + ' USDT';
+            document.getElementById('buyInvestment').textContent = formatCurrency(E);
+            document.getElementById('sellTotal').textContent = formatCurrency(C);
+            document.getElementById('buyProfitVes').textContent = formatCurrency(F);
+            document.getElementById('buyProfitUsdtValue').textContent = formatNumber(profitUsdtPerBuy, 3) + ' USDT';
+            document.getElementById('buyRoi').textContent = formatNumber(roiPerTrade, 2) + '%';
+            
+            // 4. Resultados por VENTA
+            document.getElementById('sellProfitVes').textContent = formatCurrency(F);
+            document.getElementById('sellIncome').textContent = formatCurrency(C);
+            document.getElementById('buyTotal').textContent = formatCurrency(E);
+            document.getElementById('sellProfitVesValue').textContent = formatCurrency(F);
+            document.getElementById('sellProfitUsdt').textContent = formatNumber(profitUsdtPerSell, 3) + ' USDT';
+            document.getElementById('sellNetProfit').textContent = formatNumber(roiPerTrade, 2) + '%';
+            
+            // 5. Resultados totales con vueltas
+            document.getElementById('tradesCount').textContent = V;
+            document.getElementById('totalProfit').textContent = formatCurrency(G);
+            document.getElementById('tradesDisplay').textContent = V;
+            document.getElementById('profitPerTrade').textContent = formatCurrency(F);
+            document.getElementById('totalProfitVes').textContent = formatCurrency(G);
+            document.getElementById('totalProfitUsdt').textContent = formatNumber(profitUsdtPerBuy * V, 3) + ' USDT';
+            document.getElementById('annualProfit').textContent = formatCurrency(F * 30 * 12); // 30 vueltas/mes × 12 meses
+            
+            // 6. Badge de vueltas
+            document.getElementById('totalTradesBadge').textContent = V + (V === 1 ? ' vuelta' : ' vueltas');
+            
+            // 7. Resumen adicional
+            const tradesForMillion = Math.ceil(1000000 / F);
+            document.getElementById('tradesForMillion').textContent = tradesForMillion.toLocaleString();
+            document.getElementById('monthlyProfit').textContent = formatCurrency(F * 30); // 30 vueltas/mes
+            document.getElementById('roiPerTrade').textContent = formatNumber(roiPerTrade, 2) + '%';
+            
+            // Guardar en historial
+            saveToHistory({
+                usdtAmount: A,
+                sellPrice: B,
+                buyPrice: D,
+                trades: V,
+                profitPerTrade: F,
+                totalProfit: G,
+                timestamp: new Date().toISOString()
+            });
+            
+            // Animar números
+            animateNumbers();
+            
+            // Actualizar tabla de ejemplos
+            updateExamplesTable(A, B, D, F);
+        }
+        
+        function generateExamplesTable() {
+            const examples = [10, 25, 50, 100, 200, 500, 1000, 5000];
+            const sellPrice = parseFloat(document.getElementById('sellPrice').value) || 424.00;
+            const buyPrice = parseFloat(document.getElementById('buyPrice').value) || 417.90;
+            
+            let tableHTML = '';
+            
+            examples.forEach(amount => {
+                const C = amount * sellPrice; // Venta total
+                const E = amount * buyPrice;  // Compra total
+                const F = C - E;             // Ganancia por operación
+                const profitUsdt = F / sellPrice; // Ganancia en USDT
+                const tenTrades = F * 10;    // 10 vueltas
+                
+                tableHTML += `
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                        <td style="padding: 1rem;"><strong>${formatNumber(amount)} USDT</strong></td>
+                        <td style="padding: 1rem;">${formatCurrency(E)}</td>
+                        <td style="padding: 1rem;">${formatCurrency(F)}</td>
+                        <td style="padding: 1rem;">${formatNumber(profitUsdt, 3)} USDT</td>
+                        <td style="padding: 1rem;"><strong>${formatCurrency(tenTrades)}</strong></td>
+                    </tr>
+                `;
+            });
+            
+            document.getElementById('examplesTable').innerHTML = tableHTML;
+        }
+        
+        function updateExamplesTable(currentAmount, sellPrice, buyPrice, currentProfit) {
+            const examples = [10, 25, 50, 100, 200, 500, 1000, 5000];
+            
+            // Resaltar el monto actual en la tabla
+            let tableHTML = '';
+            
+            examples.forEach(amount => {
+                const C = amount * sellPrice;
+                const E = amount * buyPrice;
+                const F = C - E;
+                const profitUsdt = F / sellPrice;
+                const tenTrades = F * 10;
+                
+                const isCurrent = amount === currentAmount;
+                const rowStyle = isCurrent ? 'background: rgba(58, 134, 255, 0.1);' : '';
+                
+                tableHTML += `
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); ${rowStyle}">
+                        <td style="padding: 1rem;">
+                            <strong>${formatNumber(amount)} USDT</strong>
+                            ${isCurrent ? ' <i class="fas fa-check-circle" style="color: var(--success);"></i>' : ''}
+                        </td>
+                        <td style="padding: 1rem;">${formatCurrency(E)}</td>
+                        <td style="padding: 1rem;">${formatCurrency(F)}</td>
+                        <td style="padding: 1rem;">${formatNumber(profitUsdt, 3)} USDT</td>
+                        <td style="padding: 1rem;"><strong>${formatCurrency(tenTrades)}</strong></td>
+                    </tr>
+                `;
+            });
+            
+            document.getElementById('examplesTable').innerHTML = tableHTML;
+        }
+        
+        // ===== FUNCIONES DE UTILIDAD =====
+        function formatCurrency(amount) {
+            if (isNaN(amount)) return '0.00 Bs.';
+            
+            return new Intl.NumberFormat('es-VE', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(amount) + ' Bs.';
+        }
+        
+        function formatNumber(number, decimals = 0) {
+            if (isNaN(number)) return '0';
+            
+            return new Intl.NumberFormat('es-VE', {
+                minimumFractionDigits: decimals,
+                maximumFractionDigits: decimals
+            }).format(number);
+        }
+        
+        function animateNumbers() {
+            document.querySelectorAll('.result-value, .summary-value').forEach(el => {
+                el.classList.add('animated-number');
+                setTimeout(() => {
+                    el.classList.remove('animated-number');
+                }, 500);
+            });
+        }
+        
+        function showNotification(message, type = 'info') {
+            // Crear notificación
+            const notification = document.createElement('div');
+            notification.className = `card ${type === 'success' ? 'badge-success' : type === 'warning' ? 'badge-warning' : 'badge-info'}`;
+            notification.style.cssText = `
+                position: fixed;
+                top: 5rem;
+                right: 1rem;
+                z-index: 10000;
+                animation: slideInRight 0.3s ease-out;
+                max-width: 300px;
+                padding: 1rem;
+            `;
+            
+            notification.innerHTML = `
+                <div class="d-flex align-center gap-2">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            // Agregar estilos de animación
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideInRight {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                @keyframes slideOutRight {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(100%); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            document.body.appendChild(notification);
+            
+            // Remover después de 3 segundos
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.3s ease-out';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+        
+        function showWelcomeMessage() {
+            setTimeout(() => {
+                showNotification('🎯 Monto personalizable activado • Opera desde 1 USDT', 'success');
+            }, 1000);
+        }
+        
+        function saveToHistory(data) {
+            calculationsHistory.unshift({
+                ...data,
+                id: Date.now()
+            });
+            
+            // Mantener solo los últimos 50 cálculos
+            if (calculationsHistory.length > 50) {
+                calculationsHistory = calculationsHistory.slice(0, 50);
+            }
+            
+            // Guardar en localStorage
+            localStorage.setItem('p2pCalculations', JSON.stringify(calculationsHistory));
+        }
+        
+        function loadSavedData() {
+            const savedData = localStorage.getItem('p2pCalculations');
+            if (savedData) {
+                try {
+                    calculationsHistory = JSON.parse(savedData);
+                } catch (e) {
+                    calculationsHistory = [];
+                }
+            }
+        }
+        
+        // ===== FUNCIONES PARA APP =====
+        
+        // Detectar si está en modo standalone (app)
+        function isStandalone() {
+            return window.matchMedia('(display-mode: standalone)').matches || 
+                   window.navigator.standalone ||
+                   document.referrer.includes('android-app://');
+        }
+        
+        // Solicitar instalación como PWA
+        function installApp() {
+            if ('beforeinstallprompt' in window) {
+                let deferredPrompt;
+                
+                window.addEventListener('beforeinstallprompt', (e) => {
+                    e.preventDefault();
+                    deferredPrompt = e;
+                    
+                    // Mostrar botón de instalación
+                    showInstallPrompt();
+                });
+                
+                function showInstallPrompt() {
+                    const installBtn = document.createElement('button');
+                    installBtn.className = 'btn btn-success';
+                    installBtn.innerHTML = '<i class="fas fa-download"></i> Instalar App';
+                    installBtn.style.cssText = `
+                        position: fixed;
+                        bottom: 5rem;
+                        right: 1rem;
+                        z-index: 10000;
+                        animation: bounce 2s infinite;
+                    `;
+                    
+                    installBtn.onclick = async () => {
+                        if (deferredPrompt) {
+                            deferredPrompt.prompt();
+                            const { outcome } = await deferredPrompt.userChoice;
+                            
+                            if (outcome === 'accepted') {
+                                showNotification('✅ App instalada correctamente', 'success');
+                            }
+                            
+                            deferredPrompt = null;
+                            installBtn.remove();
+                        }
+                    };
+                    
+                    document.body.appendChild(installBtn);
+                    
+                    // Agregar animación de bounce
+                    const style = document.createElement('style');
+                    style.textContent = `
+                        @keyframes bounce {
+                            0%, 100% { transform: translateY(0); }
+                            50% { transform: translateY(-10px); }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                }
+            }
+        }
+        
+        // Inicializar funcionalidades de app
+        if (isStandalone()) {
+            console.log('📱 Ejecutando en modo app');
+            document.body.classList.add('standalone-mode');
+        } else {
+            // Si no es app, ofrecer instalación
+            setTimeout(installApp, 2000);
+        }
+        
+        // ===== MANIFEST PARA PWA =====
+        function createManifest() {
+            const manifest = {
+                "name": "P2P Master Pro",
+                "short_name": "P2P Master",
+                "description": "Calculadora profesional para traders P2P - Monto personalizable",
+                "start_url": "/",
+                "display": "standalone",
+                "background_color": "#1a1a2e",
+                "theme_color": "#3a86ff",
+                "icons": [
+                    {
+                        "src": "icon-192x192.png",
+                        "sizes": "192x192",
+                        "type": "image/png"
+                    },
+                    {
+                        "src": "icon-512x512.png",
+                        "sizes": "512x512",
+                        "type": "image/png"
+                    }
+                ]
+            };
+            
+            // Crear link al manifest
+            const link = document.createElement('link');
+            link.rel = 'manifest';
+            link.href = 'data:application/json,' + encodeURIComponent(JSON.stringify(manifest));
+            document.head.appendChild(link);
+            
+            // Meta tags para iOS
+            const metaApple = document.createElement('meta');
+            metaApple.name = 'apple-mobile-web-app-capable';
+            metaApple.content = 'yes';
+            document.head.appendChild(metaApple);
+            
+            const metaStatusBar = document.createElement('meta');
+            metaStatusBar.name = 'apple-mobile-web-app-status-bar-style';
+            metaStatusBar.content = 'black-translucent';
+            document.head.appendChild(metaStatusBar);
+            
+            const metaTheme = document.createElement('meta');
+            metaTheme.name = 'theme-color';
+            metaTheme.content = '#1a1a2e';
+            document.head.appendChild(metaTheme);
+        }
+        
+        // Crear manifest automáticamente
+        createManifest();
+        
+        // ===== COMPARTIR APP =====
+        function shareApp() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'P2P Master Pro',
+                    text: '¡Calculadora profesional para traders P2P! Opera desde 1 USDT',
+                    url: window.location.href
+                });
+            } else {
+                // Copiar al portapapeles
+                navigator.clipboard.writeText(window.location.href);
+                showNotification('🔗 Enlace copiado al portapapeles', 'success');
+            }
+        }
+        
+        // Agregar botón de compartir
+        setTimeout(() => {
+            const shareBtn = document.createElement('button');
+            shareBtn.className = 'btn btn-icon btn-primary';
+            shareBtn.innerHTML = '<i class="fas fa-share-alt"></i>';
+            shareBtn.style.cssText = `
+                position: fixed;
+                bottom: 1rem;
+                right: 1rem;
+                z-index: 10000;
+            `;
+            shareBtn.onclick = shareApp;
+            shareBtn.title = 'Compartir app';
+            
+            document.body.appendChild(shareBtn);
+        }, 1000);
+        
+        // ===== MOSTRAR FÓRMULA ACTUALIZADA =====
+        function showFormulaExample() {
+            const A = document.getElementById('usdtAmount').value || 100;
+            const B = document.getElementById('sellPrice').value || 424.00;
+            const D = document.getElementById('buyPrice').value || 417.90;
+            const V = document.getElementById('numberOfTrades').value || 1;
+            
+            const example = `
+                📊 FÓRMULA ACTUALIZADA:
+                
+                A = ${A} USDT (monto personalizable)
+                B = ${B} Bs. (precio venta por USDT)
+                D = ${D} Bs. (precio compra por USDT)
+                V = ${V} (vueltas)
+                
+                C = A × B = ${A} × ${B} = ${A * B} Bs.
+                E = A × D = ${A} × ${D} = ${A * D} Bs.
+                F = C - E = ${A * B} - ${A * D} = ${A * (B - D)} Bs.
+                G = V × F = ${V} × ${A * (B - D)} = ${V * A * (B - D)} Bs.
+                
+                ✅ Ahora puedes operar desde 1 USDT hasta el monto que desees.
+            `;
+            
+            console.log(example);
+        }
+        
+        // Mostrar ejemplo en consola
+        setTimeout(showFormulaExample, 1500);
+    </script>
+</body>
+</html>http://localhost:7700/<index class="html"></index>
